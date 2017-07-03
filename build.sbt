@@ -9,7 +9,12 @@ lazy val root = project
     )),
     name := "Binding.scala Deposit Calculator",
     libraryDependencies ++= Seq(
-      "org.scala-js" %%% "scalajs-dom" % "0.9.2"
+      "org.scala-js"             %%% "scalajs-dom" % "0.9.2",
+      "com.thoughtworks.binding" %%% "binding"     % "10.0.2",
+      "com.thoughtworks.binding" %%% "dom"         % "10.0.2"
+    ),
+    addCompilerPlugin(
+      "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full
     ),
     scalaJSUseMainModuleInitializer := true
   )
