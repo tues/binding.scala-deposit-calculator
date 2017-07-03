@@ -22,7 +22,7 @@ object MainApp extends JSApp {
   val deposits : Vars[Deposit] = Vars(Deposit(1, 0.02), Deposit(3, 0.025), Deposit(12, 0.03))
 
   @dom def renderMainContainer(amount: Var[Double], duration: Var[Int], deposits: Vars[Deposit]) = {
-    <div>
+    <div class="row">
       { renderAmountInput(amount).bind }
       { renderDurationInput(duration).bind }
       { renderDepositsTable(amount, duration, deposits).bind }
@@ -30,30 +30,48 @@ object MainApp extends JSApp {
   }
 
   @dom def renderAmountInput(amount: Var[Double]) = {
-    <input type="number" id="amountInput"
-      value={ amount.bind.toString }
-      onchange={ (e: Event) => amount := amountInput.value.toDouble }
-      />
+    <div class="col s12 m6 input-field">
+      <input type="number" id="amountInput" min="0" step="0.01"
+        value={ amount.bind.toString }
+        onchange={ (e: Event) => amount := amountInput.value.toDouble }
+        onmouseup={ (e: Event) => amount := amountInput.value.toDouble }
+        />
+      <label for="amountInput" class="active">Deposit Amount ($)</label>
+    </div>
   }
 
   @dom def renderDurationInput(duration: Var[Int]) = {
-    <input type="number" id="durationInput"
-      value={ duration.bind.toString }
-      onchange={ (e: Event) => duration := durationInput.value.toInt }
+    <div class="col s12 m6 input-field">
+      <input type="number" id="durationInput" min="0" step="1"
+        value={ duration.bind.toString }
+        onchange={ (e: Event) => duration := durationInput.value.toInt }
+        onmouseup={ (e: Event) => duration := durationInput.value.toInt }
       />
+      <label for="durationInput" class="active">Deposit Duration (months)</label>
+    </div>
   }
 
   @dom def renderDepositsTable(amount: Binding[Double], duration: Binding[Int], deposits: Vars[Deposit]) = {
     <table>
-      {
-        deposits.map { deposit =>
-          renderDeposit(
-            deposit, amount, duration,
-            onDelete = { deposits.get -= _ }
-          ).bind
+      <thead>
+        <tr>
+          <th>Period (months)</th>
+          <th>Interest Rate (%/year)</th>
+          <th>Gain ($)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          deposits.map { deposit =>
+            renderDeposit(
+              deposit, amount, duration,
+              onDelete = { deposits.get -= _ }
+            ).bind
+          }
         }
-      }
-      { renderDepositInput(deposits).bind }
+        { renderDepositInput(deposits).bind }
+      </tbody>
     </table>
   }
 
@@ -68,27 +86,34 @@ object MainApp extends JSApp {
         }
       </td>
       <td>
-        <button onclick={ (e: Event) => onDelete(deposit) }>delete</button>
+        <button class="btn" onclick={ (e: Event) => onDelete(deposit) }>
+          <i class="material-icons">delete_forever</i>
+        </button>
       </td>
     </tr>
   }
 
   @dom def renderDepositInput(deposits: Vars[Deposit]) = {
+    def onSubmit(periodInput: HTMLInputElement, interestInput: HTMLInputElement)(e: Event) = {
+      val period = periodInput.value.toInt
+      val interest = interestInput.value.toDouble / 100
+      deposits.get += Deposit(period, interest)
+      periodInput.value = ""
+      interestInput.value = ""
+      periodInput.focus
+      false
+    }
+
     <tr>
-      <td><input type="number" id="periodInput"/></td>
-      <td><input type="number" id="interestInput"/></td>
+      <td><input type="number" id="periodInput" data:form="newDeposit" min="1" step="1"/></td>
+      <td><input type="number" id="interestInput" data:form="newDeposit" min="0" step="0.01"/></td>
       <td></td>
       <td>
-        <button type="submit"
-          onclick={ (e: Event) =>
-            val period = periodInput.value.toInt
-            val interest = interestInput.value.toDouble / 100
-
-            deposits.get += Deposit(period, interest)
-          }
-        >
-          add
-        </button>
+        <form id="newDeposit" onsubmit={ onSubmit(periodInput, interestInput) _ }>
+          <button type="submit" class="btn" onclick={ onSubmit(periodInput, interestInput) _ }>
+            <i class="material-icons">playlist_add</i>
+          </button>
+        </form>
       </td>
     </tr>
   }

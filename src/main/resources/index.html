@@ -3,9 +3,45 @@
   <head>
     <meta charset="UTF-8">
     <title>Binding.scala Deposit Calculator</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css" />
+    <style type="text/css">
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f9f9f9;
+      }
+
+      main {
+        flex: 1 0 auto;
+        padding-top: 2em;
+      }
+    </style>
   </head>
   <body>
-    <div id="mainContainer"></div>
+    <header>
+      <nav role="navigation">
+        <div class="nav-wrapper container">
+          <a href="#" class="brand-logo">Time Deposit Calculator</a>
+        </div>
+      </nav>
+    </header>
+    <main class="container">
+      <div id="mainContainer"></div>
+    </main>
+    <footer class="page-footer">
+      <div class="container white-text">
+        This is an example from the <a href="https://blog.scalac.io/binding-scala.html" class="deep-purple-text text-lighten-4">blog post about Binding.scala</a>.
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+          Copyright &copy; 2017 <a href="https://scalac.io" class="deep-purple-text text-lighten-4">Scalac</a>
+        </div>
+      </div>
+    </footer>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
     <!-- Include Scala.js compiled code -->
     <script type="text/javascript" src="../binding-scala-deposit-calculator-opt.js"></script>
   </body>
