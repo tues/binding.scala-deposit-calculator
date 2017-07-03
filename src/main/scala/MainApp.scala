@@ -45,11 +45,19 @@ object MainApp extends JSApp {
 
   @dom def renderDepositsTable(amount: Binding[Double], duration: Binding[Int], deposits: Vars[Deposit]) = {
     <table>
-      { deposits.map(renderDeposit(_, amount, duration).bind) }
+      {
+        deposits.map { deposit =>
+          renderDeposit(
+            deposit, amount, duration,
+            onDelete = { deposits.get -= _ }
+          ).bind
+        }
+      }
+      { renderDepositInput(deposits).bind }
     </table>
   }
 
-  @dom def renderDeposit(deposit: Deposit, amount: Binding[Double], duration: Binding[Int]) = {
+  @dom def renderDeposit(deposit: Deposit, amount: Binding[Double], duration: Binding[Int], onDelete: Deposit => Unit) = {
     <tr>
       <td>{ deposit.period.toString }</td>
       <td>{ (deposit.interest * 100).toString }%</td>
@@ -58,6 +66,29 @@ object MainApp extends JSApp {
           val gain = deposit.gain(amount.bind, duration.bind)
           f"${gain}%.2f"
         }
+      </td>
+      <td>
+        <button onclick={ (e: Event) => onDelete(deposit) }>delete</button>
+      </td>
+    </tr>
+  }
+
+  @dom def renderDepositInput(deposits: Vars[Deposit]) = {
+    <tr>
+      <td><input type="number" id="periodInput"/></td>
+      <td><input type="number" id="interestInput"/></td>
+      <td></td>
+      <td>
+        <button type="submit"
+          onclick={ (e: Event) =>
+            val period = periodInput.value.toInt
+            val interest = interestInput.value.toDouble / 100
+
+            deposits.get += Deposit(period, interest)
+          }
+        >
+          add
+        </button>
       </td>
     </tr>
   }
